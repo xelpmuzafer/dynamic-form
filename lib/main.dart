@@ -1,11 +1,7 @@
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:surveynow/chatbot.dart';
-import 'package:surveynow/formScreen.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:surveynow/services/my_shared_preferrences.dart';
-import 'package:http/http.dart' as http;
 
 void main() {
   

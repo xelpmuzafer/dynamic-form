@@ -7,12 +7,13 @@ import 'package:surveynow/widgets/customButton.dart';
 
 class ChatBot extends StatefulWidget {
   ChatBot({Key? key}) : super(key: key);
-
+   
   @override
   State<ChatBot> createState() => _ChatBotState();
 }
 
 class _ChatBotState extends State<ChatBot> {
+
   Color chatBotBgcolor = const Color(0x00000029);
 
   final ScrollController _controller = ScrollController();
@@ -21,8 +22,8 @@ class _ChatBotState extends State<ChatBot> {
 
   List<Widget> messages = [];
 
-  getReplyFromServer(id) async {
-    dynamic _response = await HttpService().getReply(id);
+  getReplyFromServer(id, selected_option) async {
+    dynamic _response = await HttpService().getReply(id,selected_option );
    dynamic _reply = _response['data'];
 
     List<ChatMessage> temp = [];
@@ -30,8 +31,9 @@ class _ChatBotState extends State<ChatBot> {
     _reply.forEach((element) {
       temp.add(ChatMessage(
           id: element['id'],
+
           parentId: element['parent_id'],
-          message: element['message']));
+          message: element['message'], callback: element['callback'], dbRowId: element['db_row_id'], type: element['type']));
     });
 
     setState(() {
@@ -46,26 +48,31 @@ class _ChatBotState extends State<ChatBot> {
         messages.add(SentMessage(ChatMessage(
             id: messages.length + 1,
             parentId: 2,
-            message: textControlled.text)));
+            message: textControlled.text, type: '', callback: '', dbRowId: '')));
         textControlled.clear();
       });
       _controller.jumpTo(_controller.position.maxScrollExtent);
-      getReplyFromServer(2);
+      getReplyFromServer(2,"");
     }
   }
 
   @override
   void initState() {
-    // TODO: implement initState
+    
     super.initState();
 
     setState(() {
       messages.add(ReceivedMessage(ChatMessage(
           id: 1,
           parentId: 0,
-          message: "Welcome to mitaan, are you looking for service?")));
+          message: "Welcome to mitaan, are you looking for service?", 
+          callback: '',
+          dbRowId: "",
+          type: "message"
+
+          )));
     });
-    getReplyFromServer(1);
+    getReplyFromServer(1, "");
   }
 
   @override
@@ -94,10 +101,10 @@ class _ChatBotState extends State<ChatBot> {
                 FractionallySizedBox(
       heightFactor: 0.97,
       child: Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Container(
           decoration: BoxDecoration(
-                  color: Color.fromARGB(71, 122, 148, 187),
+                  color: const Color.fromARGB(71, 122, 148, 187),
                   borderRadius: BorderRadius.circular(40)),
           child: Column(
                 children: [
@@ -110,7 +117,7 @@ class _ChatBotState extends State<ChatBot> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.close),
+                            icon: const Icon(Icons.close),
                             onPressed: () {
                               Navigator.pop(context);
                             },
@@ -129,7 +136,7 @@ class _ChatBotState extends State<ChatBot> {
                 
                 
           
-                        padding: EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(10),
                         child: Column(
                             children: List.generate(
                                     messages.length, (index) => messages[index])
@@ -147,9 +154,9 @@ class _ChatBotState extends State<ChatBot> {
                                 flex: 6,
                                 child: TextFormField(
                                   controller: textControlled,
-                                  decoration:  InputDecoration(
+                                  decoration:  const InputDecoration(
                                     focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
+                                      borderSide: const BorderSide(
                                           color: Colors.blue, width: 1.0),
                                     ),
                                     enabledBorder: OutlineInputBorder(
@@ -166,12 +173,12 @@ class _ChatBotState extends State<ChatBot> {
                                   child: ElevatedButton(
                                     style: ElevatedButton.styleFrom(
                                       primary: Colors.white,
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           horizontal: 0, vertical: 0),
                                     ),
                                     onPressed: sendMessage,
-                                    child: Text("Send",
-                                        style: TextStyle(
+                                    child: const Text("Send",
+                                        style: const TextStyle(
                                             fontSize: 15,
                                             color: AppColors.kPrimaryColor,
                                             fontWeight: FontWeight.bold)),
@@ -191,7 +198,7 @@ class _ChatBotState extends State<ChatBot> {
 
   Container ReceivedOptions(List<ChatMessage> messageObjects) {
     return Container(
-      margin: EdgeInsets.only(bottom: 25),
+      margin: const EdgeInsets.only(bottom: 25),
       child: Align(
         alignment: Alignment.topLeft,
         child: SizedBox(
@@ -207,21 +214,21 @@ class _ChatBotState extends State<ChatBot> {
                         parentId: messageObjects[index].parentId!,
                         message: messageObjects[index].message!)));
                   });
-                  getReplyFromServer(messageObjects[index].id);
+                  getReplyFromServer(messageObjects[index].id, messageObjects[index].dbRowId);
                 },
                 child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
                   decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(10),
                       border:
                           Border.all(color: AppColors.kPrimaryColor, width: 1)),
-                  margin: EdgeInsets.all(10),
+                  margin: const EdgeInsets.all(10),
                   child: Stack(
                     children: <Widget>[
                       Text(
                         messageObjects[index].message!,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             color: AppColors.kPrimaryColor),
                       ),
@@ -238,18 +245,18 @@ class _ChatBotState extends State<ChatBot> {
 
   Container ReceivedMessage(ChatMessage messageObject) {
     return Container(
-      margin: EdgeInsets.only(bottom: 2),
+      margin: const EdgeInsets.only(bottom: 2),
       child: Align(
         alignment: Alignment.topLeft,
         child: CustomPaint(
           painter:
               ChatBubble(color: Colors.white, alignment: Alignment.topLeft),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 2),
-            margin: EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 2),
+            margin: const EdgeInsets.all(10),
             child: Stack(
               children: <Widget>[
-                Text(messageObject.message!, style: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),),
+                Text(messageObject.message!, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 16),),
               ],
             ),
           ),
@@ -260,7 +267,7 @@ class _ChatBotState extends State<ChatBot> {
 
   Container SentMessage(ChatMessage messageObject) {
     return Container(
-      margin: EdgeInsets.only(bottom: 25),
+      margin: const EdgeInsets.only(bottom: 25),
       child: Align(
         alignment: Alignment
             .topRight, //Change this to Alignment.topRight or Alignment.topLeft
@@ -268,13 +275,13 @@ class _ChatBotState extends State<ChatBot> {
           painter: ChatBubble(
               color: AppColors.kPrimaryColor, alignment: Alignment.topRight),
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 2),
-            margin: EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 2),
+            margin: const EdgeInsets.all(10),
             child: Stack(
               children: <Widget>[
                 Text(
                   messageObject.message!,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
               ],
             ),

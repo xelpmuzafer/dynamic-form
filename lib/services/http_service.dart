@@ -1,23 +1,13 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'package:http_parser/http_parser.dart';
 
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:surveynow/formScreen.dart';
-import 'package:surveynow/models/chatMessage.dart';
-import 'package:surveynow/models/questionModel.dart';
-import 'package:surveynow/services/my_shared_preferrences.dart';
-import 'package:location/location.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:surveynow/stepper_form.dart';
 
 class HttpService {
   
-  Future<dynamic> getReply(int id) async {
-    final url = Uri.parse("http://49.50.74.106:3001/chatbot/chat/${id}");
+  Future<dynamic> getReply(int id, dynamic selected_option) async {
+    final url = Uri.parse("http://49.50.74.106:3001/chatbot/chat/${id}?selected_option=${selected_option.toString().replaceAll("&", "^")}");
     
     print(url);
     final headers = {
@@ -34,7 +24,8 @@ class HttpService {
       String responseBody = response.body;
 
       dynamic _jsondata = jsonDecode(responseBody);
-
+     
+     print(_jsondata);
       return _jsondata;
     } else {
       return [];
